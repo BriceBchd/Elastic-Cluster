@@ -1,0 +1,35 @@
+version: '2.2'
+
+services:
+  es01:
+    build:
+      context: .
+      dockerfile: Elastic.Dockerfile
+    container_name: es01
+    environment:
+      - node.name=es01
+    ports:
+      - 9201:9200
+    mem_limit: 1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./certs:/usr/share/elasticsearch/config/certs
+  # es02:
+  #   build:
+  #     context: .
+  #     dockerfile: Elastic.Dockerfile
+  #   container_name: es02
+  #   environment:
+  #     - node.name=es02
+  #     - cluster.name=es-docker-cluster
+  #     - discovery.seed_hosts=es01
+  #     - cluster.initial_master_nodes=es01,es02
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ports:
+  #     - 9202:9200
+  #   volumes:
+  #     - ./certs:/usr/share/elasticsearch/config/certs
