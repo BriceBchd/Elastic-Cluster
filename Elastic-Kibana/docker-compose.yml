@@ -90,7 +90,9 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
+      - xpack.monitoring.collection.enabled=true
     mem_limit: ${MEM_LIMIT}
+    restart: unless-stopped
     ulimits:
       memlock:
         soft: -1
@@ -129,7 +131,9 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
+      - xpack.monitoring.collection.enabled=true
     mem_limit: ${MEM_LIMIT}
+    restart: unless-stopped
     ulimits:
       memlock:
         soft: -1
@@ -168,7 +172,9 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
+      - xpack.monitoring.collection.enabled=true
     mem_limit: ${MEM_LIMIT}
+    restart: unless-stopped
     ulimits:
       memlock:
         soft: -1
