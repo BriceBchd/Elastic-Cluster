@@ -1,0 +1,12 @@
+[Unit]
+Description=Docker Compose Project
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker compose -f /home/brice/Elastic-Cluster/Elastic-Kibana/docker-compose.yml  up -d
+
+[Install]
+WantedBy=multi-user.target
+
