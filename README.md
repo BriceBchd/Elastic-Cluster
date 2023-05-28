@@ -19,7 +19,7 @@ docker-compose logs -f
 docker-compose down
 
 # Get the ca cert
-docker-compose exec es01 cat /usr/share/elasticsearch/config/certs/ca/ca.crt > ca.crt
+docker-compose exec es01 cat config/certs/ca/ca.crt > ca.crt
 
 # Start the cluster on startup
 cp elastic-cluster.service /etc/systemd/system/elastic-cluster.service
