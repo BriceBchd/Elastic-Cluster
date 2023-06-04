@@ -25,5 +25,14 @@ docker-compose exec es01 cat config/certs/ca/ca.crt > ca.crt
 cp elastic-cluster.service /etc/systemd/system/elastic-cluster.service
 systemctl enable elastic-cluster.service
 systemctl start elastic-cluster.service
+```
 
+### Issues
+- Change the vm max map count
+```bash
+# Windows docker desktop
+wsl -d docker-desktop sysctl -w vm.max_map_count=262144
+
+# Linux
+sysctl -w vm.max_map_count=262144
 ```
