@@ -244,23 +244,18 @@ services:
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
     mem_limit: ${MEM_LIMIT}
     # restart: unless-stopped
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -s -I https://localhost:9600 | grep -q 'HTTP/1.1 200 OK'"
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 120
-  # metricbeat:
-  #   depends_on:
-  #     logstash:
-  #       condition: service_healthy
+
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:${STACK_VERSION}
+    user: "metricbeat:root"
+    volumes:
+      - ./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+      - certs:/usr/share/metricbeat/config/certs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+    mem_limit: 512m
+
 
 volumes:
   certs:

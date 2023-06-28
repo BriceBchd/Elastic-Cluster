@@ -25,6 +25,10 @@ docker-compose exec es01 cat config/certs/ca/ca.crt > ca.crt
 cp elastic-cluster.service /etc/systemd/system/elastic-cluster.service
 systemctl enable elastic-cluster.service
 systemctl start elastic-cluster.service
+
+# Update one node
+docker-compose stop <node>
+docker-compose up -d <node>
 ```
 
 ### Issues
