@@ -59,7 +59,7 @@ services:
         echo "All done!";
       '
     healthcheck:
-      test: [ "CMD-SHELL", "[ -f config/certs/es01/es01.crt ]" ]
+      test: [ "CMD-SHELL", " cat config/certs/ca/ca.crt " ]
       interval: 1s
       timeout: 5s
       retries: 120
@@ -92,7 +92,6 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
-      - xpack.monitoring.collection.enabled=true
     mem_limit: ${MEM_LIMIT}
     restart: unless-stopped
     ulimits:
@@ -121,6 +120,7 @@ services:
       - cluster.name=${CLUSTER_NAME}
       - cluster.initial_master_nodes=es01,es02,es03
       - discovery.seed_hosts=es01,es03
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -133,7 +133,6 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
-      - xpack.monitoring.collection.enabled=true
     mem_limit: ${MEM_LIMIT}
     restart: unless-stopped
     ulimits:
@@ -162,6 +161,7 @@ services:
       - cluster.name=${CLUSTER_NAME}
       - cluster.initial_master_nodes=es01,es02,es03
       - discovery.seed_hosts=es01,es02
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -174,7 +174,6 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
-      - xpack.monitoring.collection.enabled=true
     mem_limit: ${MEM_LIMIT}
     restart: unless-stopped
     ulimits:
@@ -212,6 +211,7 @@ services:
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+      - MONITORING_KIBANA_COLLECTION_ENABLED=false
     mem_limit: ${MEM_LIMIT}
     healthcheck:
       test:
@@ -245,6 +245,7 @@ services:
       - 'ELASTICSEARCH_HOSTS= ["https://es01:9200", "https://es02:9200", "https://es03:9200"]'
       - "LOGSTASH_PASSWORD=${LOGSTASH_PASSWORD}"
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
+      - "CLUSTER_NAME=${CLUSTER_NAME}"
     mem_limit: ${MEM_LIMIT}
     # restart: unless-stopped
 
