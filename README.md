@@ -29,6 +29,10 @@ systemctl start elastic-cluster.service
 # Update one node
 docker-compose stop <node>
 docker-compose up -d <node>
+
+# Metricbeat import dashboards
+docker-compose exec metricbeat metricbeat setup --dashboards
+
 ```
 
 ### Issues
