@@ -1,4 +1,4 @@
-http.host: "0.0.0.0"
-xpack.monitoring.enabled: false
 config.reload.automatic: true
-cluster.name=${CLUSTER_NAME}
+http.host: 0.0.0.0
+node.name: logstash01
+xpack.monitoring.enabled: false

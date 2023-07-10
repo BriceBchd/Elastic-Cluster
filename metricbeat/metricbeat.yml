@@ -41,7 +41,7 @@ metricbeat.modules:
   period: 10s
   hosts: ["http://kibana:5601"]
   username: "elastic"
-  password: "changeme1"
+  password: ${ELASTIC_PASSWORD}
   ssl.enabled: true
   ssl.verification_mode: certificate
   ssl.certificate_authorities: ["/usr/share/metricbeat/config/certs/ca/ca.crt"]
@@ -50,7 +50,7 @@ metricbeat.modules:
   period: 10s
   hosts: ["https://es01:9200", "https://es02:9200", "https://es03:9200"]
   username: "elastic"
-  password: "changeme1"
+  password: ${ELASTIC_PASSWORD}
   ssl.enabled: true
   ssl.verification_mode: certificate
   ssl.certificate_authorities: ["/usr/share/metricbeat/config/certs/ca/ca.crt"]
@@ -61,7 +61,7 @@ processors:
 output.elasticsearch:
   hosts: ["https://es01:9200", "https://es02:9200", "https://es03:9200"]
   username: "elastic"
-  password: "changeme1"
+  password: ${ELASTIC_PASSWORD}
   ssl.enabled: true
   ssl.verification_mode: certificate
   ssl.certificate_authorities: ["/usr/share/metricbeat/config/certs/ca/ca.crt"]
@@ -69,7 +69,7 @@ output.elasticsearch:
 setup.kibana:
   host: "http://kibana:5601"
   username: "elastic"
-  password: "changeme1"
+  password: ${ELASTIC_PASSWORD}
   ssl.enabled: true
   ssl.verification_mode: certificate
   ssl.certificate_authorities: ["/usr/share/metricbeat/config/certs/ca/ca.crt"]

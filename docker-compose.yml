@@ -59,7 +59,7 @@ services:
         echo "All done!";
       '
     healthcheck:
-      test: [ "CMD-SHELL", " cat config/certs/ca/ca.crt " ]
+      test: [ "CMD-SHELL", " cat /usr/share/elasticsearch/config/certs/ca/ca.crt " ]
       interval: 1s
       timeout: 5s
       retries: 120
@@ -212,6 +212,7 @@ services:
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
       - MONITORING_KIBANA_COLLECTION_ENABLED=false
+      - SERVER_PUBLICBASEURL=${KIBANA_URL}
     mem_limit: ${MEM_LIMIT}
     healthcheck:
       test:
@@ -238,14 +239,15 @@ services:
       - 5044:5044
     volumes:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./logstash/pipelines:/usr/share/logstash/pipelines
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
       - certs:/usr/share/logstash/config/certs
     environment:
       - "ES_JAVA_OPTS=-Xmx512m -Xms512m"
       - 'ELASTICSEARCH_HOSTS= ["https://es01:9200", "https://es02:9200", "https://es03:9200"]'
-      - "LOGSTASH_PASSWORD=${LOGSTASH_PASSWORD}"
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
       - "CLUSTER_NAME=${CLUSTER_NAME}"
+      - "NODE_NAME=logstash01"
     mem_limit: ${MEM_LIMIT}
     # restart: unless-stopped
 
@@ -263,6 +265,8 @@ services:
       - /proc:/hostfs/proc:ro
       - /:/hostfs:ro
     mem_limit: 512m
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
 
 
 volumes:
