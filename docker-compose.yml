@@ -30,24 +30,21 @@ services:
           "      - localhost\n"\
           "    ip:\n"\
           "      - 127.0.0.1\n"\
+          "      - 192.168.1.90\n"\
           "  - name: es02\n"\
           "    dns:\n"\
           "      - es02\n"\
           "      - localhost\n"\
           "    ip:\n"\
           "      - 127.0.0.1\n"\
+          "      - 192.168.1.90\n"\
           "  - name: es03\n"\
           "    dns:\n"\
           "      - es03\n"\
           "      - localhost\n"\
           "    ip:\n"\
           "      - 127.0.0.1\n"\
-          "  - name: fleet\n"\
-          "    dns:\n"\
-          "      - fleet\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
+          "      - 192.168.1.90\n"\
           > config/certs/instances.yml;
           bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
           unzip config/certs/certs.zip -d config/certs;
@@ -65,7 +62,11 @@ services:
         echo "All done!";
       '
     healthcheck:
-      test: [ "CMD-SHELL", " cat /usr/share/elasticsearch/config/certs/ca/ca.crt " ]
+      test:
+        [
+          "CMD-SHELL",
+          " cat /usr/share/elasticsearch/config/certs/ca/ca.crt "
+        ]
       interval: 1s
       timeout: 5s
       retries: 120
@@ -79,7 +80,7 @@ services:
       - certs:/usr/share/elasticsearch/config/certs
       - esdata01:/usr/share/elasticsearch/data
     ports:
-      - ${ES_PORT}:9200
+      - 9201:9200
     environment:
       - node.name=es01
       - cluster.name=${CLUSTER_NAME}
@@ -118,6 +119,8 @@ services:
     depends_on:
       - es01
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    ports:
+      - 9202:9200
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
       - esdata02:/usr/share/elasticsearch/data
@@ -159,6 +162,8 @@ services:
     depends_on:
       - es02
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    ports:
+      - 9203:9200
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
       - esdata03:/usr/share/elasticsearch/data
@@ -219,7 +224,14 @@ services:
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
       - MONITORING_KIBANA_COLLECTION_ENABLED=false
       - SERVER_PUBLICBASEURL=${KIBANA_URL}
-    mem_limit: ${MEM_LIMIT}
+      - SERVER_BASEPATH=/kibana
+      # xpack.encryptedSavedObjects.encryptionKey
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY}
+      # xpack.reporting.encryptionKey
+      - XPACK_REPORTING_ENCRYPTIONKEY=${XPACK_REPORTING_ENCRYPTIONKEY}
+      # xpack.security.encryptionKey
+      - XPACK_SECURITY_ENCRYPTIONKEY=${XPACK_SECURITY_ENCRYPTIONKEY}
+    mem_limit: 1024m
     healthcheck:
       test:
         [
@@ -254,8 +266,7 @@ services:
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
       - "CLUSTER_NAME=${CLUSTER_NAME}"
       - "NODE_NAME=logstash01"
-    mem_limit: ${MEM_LIMIT}
-    # restart: unless-stopped
+    mem_limit: 512m
 
   fleet:
     image: docker.elastic.co/beats/elastic-agent:${STACK_VERSION}
@@ -271,6 +282,7 @@ services:
       - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
       - /proc:/hostfs/proc:ro
       - /:/hostfs:ro
+      - fleetdata:/usr/share/elastic-agent/data
     user: root
     mem_limit: 512m
     environment:
@@ -286,43 +298,7 @@ services:
       - elastic-agent run
     ports:
       - 8220:8220
-
-  # elastic-agent:
-  #   image: docker.elastic.co/beats/elastic-agent:${STACK_VERSION}
-  #   volumes:
-  #     - certs:/usr/share/elastic-agent/config/certs
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
-  #     - /proc:/hostfs/proc:ro
-  #     - /:hostfs:ro
-  #   mem_limit: 512m
-  #   environment:
-  #     - FLEET_ENROLL=1
-  #     - FLEET_ENROLL_INSECURE=1
-  #     - FLEET_URL=https://es01:9200
-  #     - FLEET_CA=certs/ca/ca.crt
-  #     - FLEET_CERT=certs/es01/es01.crt
-  #     - FLEET_CERT_KEY=certs/es01/es01.key
-  #     - FLEET_SERVER_ENABLE=true
-  #     - FLEET_SERVER_HOST=
-
-  # metricbeat:
-  #   depends_on:
-  #     - logstash
-  #   restart: unless-stopped
-  #   image: docker.elastic.co/beats/metricbeat:${STACK_VERSION}
-  #   user: root
-  #   volumes:
-  #     - ./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
-  #     - certs:/usr/share/metricbeat/config/certs
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
-  #     - /proc:/hostfs/proc:ro
-  #     - /:/hostfs:ro
-  #   mem_limit: 512m
-  #   environment:
-  #     - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-
+      - 8200:8200
 
 volumes:
   certs:
@@ -334,4 +310,6 @@ volumes:
   esdata03:
     driver: local
   kibanadata:
+    driver: local
+  fleetdata:
     driver: local
