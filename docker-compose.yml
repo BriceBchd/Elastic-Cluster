@@ -300,6 +300,23 @@ services:
       - 8220:8220
       - 8200:8200
 
+  heartbeat:
+    image: docker.elastic.co/beats/heartbeat:${STACK_VERSION}
+    hostname: heartbeat-docker
+    healthcheck:
+      test: "heartbeat status"
+      interval: 5s
+      timeout: 10s
+      retries: 120
+    volumes:
+      - certs:/usr/share/heartbeat/config/certs
+      - ./heartbeat/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
+    environment:
+      - URLS=["https://welcome.bricebchd.fr/"]
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
+    user: heartbeat
+    mem_limit: 256m
+
 volumes:
   certs:
     driver: local
